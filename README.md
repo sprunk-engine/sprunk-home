@@ -1,4 +1,4 @@
-# Sprunk Hero - A sprunk engine example
+# Sprunk Empty Project - With Quick Start Setup
 
 ## Description
 This is an empty [sprunk](https://sprunk-engine.com) project that use [Vite](https://vitejs.dev/).
