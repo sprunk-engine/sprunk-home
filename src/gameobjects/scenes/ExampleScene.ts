@@ -22,13 +22,14 @@ export class ExampleScene extends GameObject{
 
         /* --- Text example --- */
         const textGo = new GameObject();
-        this.addChild(textGo);
+        orbitGo.addChild(textGo);
 
         //You can directly customize a game object's behavior
-        const textRenderBehavior = new TextRenderBehavior("assets/fonts/Sprunthrax/Sprunthrax-SemiBold-msdf.json", { centered: true, pixelScale: 1/250, color: [0.5, 0.3, 1, 0.5] });
+        const textRenderBehavior = new TextRenderBehavior("assets/fonts/Sprunthrax/Sprunthrax-SemiBold-msdf.json", { centered: true, pixelScale: 1/250, color: [0.5, 0.3, 1, 0.7] });
         textGo.addBehavior(textRenderBehavior);
         textRenderBehavior.text = "Rendered in real-time with Sprunk Engine!";
         textGo.transform.position.y = 2.5;
+        textGo.transform.position.x = 0;
 
         /* --- 3D Model example --- */
         const earth = new GameObject("Earth");
@@ -62,6 +63,26 @@ export class ExampleScene extends GameObject{
                     "/assets/models/moon.jpg",
                     BasicVertexMVPWithUV,
                     BasicTextureSample,
+                ),
+            )
+        })
+
+        const stars = new GameObject("Stars");
+        this.addChild(stars);
+        stars.addBehavior(new RotatingOutputBehavior(Vector3.up(), 0.05));
+        ObjLoader.load("/assets/models/stars.obj").then((obj) => {
+            stars.addBehavior(
+                new MeshRenderBehavior(
+                    obj,
+                    "/assets/models/stars.png",
+                    BasicVertexMVPWithUV,
+                    BasicTextureSample,
+                    {
+                        addressModeU: "repeat",
+                        addressModeV: "repeat",
+                        magFilter: "linear",
+                        minFilter: "linear",
+                    }
                 ),
             )
         })
