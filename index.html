@@ -526,16 +526,36 @@
         }
 
         @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: flex;
+            }
+            
             nav {
-                flex-direction: column;
-                gap: 20px;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
             }
-
+            
             .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
+                position: fixed;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: var(--dark);
+                flex-direction: column;
+                align-items: center;
+                padding: 20px 0;
+                gap: 15px;
+                transform: translateY(-150%);
+                transition: transform 0.3s ease;
+                z-index: 999;
+                border-bottom: 1px solid var(--glass-border);
             }
-
+            
+            .nav-links.active {
+                transform: translateY(0);
+            }
+            
             .hero {
                 text-align: center;
             }
@@ -547,9 +567,38 @@
             .hero-buttons {
                 justify-content: center;
             }
-
+            
             .stats {
                 justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: clamp(2rem, 4vw, 2.5rem);
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .hero-buttons .btn {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .feature-card, .step, .doc-card {
+                padding: 25px 20px;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -595,16 +644,19 @@
         .margin-top-20{
             margin-top: 20px;
         }
+
     </style>
 </head>
 <body>
     <header>
         <div class="container">
             <nav>
-                <a href="#" class="logo">
-                    <img src="/public/sprunk.png" alt="Sprunk Logo">
-                    <span>Sprunk</span>
-                </a>
+                <div class="nav-left">
+                    <a href="#" class="logo">
+                        <img src="/public/sprunk.png" alt="Sprunk Logo">
+                        <span>Sprunk</span>
+                    </a>
+                </div>
                 <ul class="nav-links">
                     <li><a href="#features">Features</a></li>
                     <li><a href="#showcase">Showcase</a></li>
