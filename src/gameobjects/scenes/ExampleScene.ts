@@ -1,18 +1,22 @@
-import {Camera, Color, GameObject, MeshRenderBehavior, ObjLoader, TextRenderBehavior, Vector3} from "sprunk-engine";
-import {GridRenderBehavior} from "../../behaviors/debug/GridRenderBehavior.ts";
-import {FreeLookCameraController} from "../../behaviors/camera/FreeLookCameraController.ts";
-import {FreeLookCameraKeyboardMouseInput} from "../../behaviors/camera/FreeLookCameraKeyboardMouseInput.ts";
+import {Camera, GameObject, MeshRenderBehavior, ObjLoader, TextRenderBehavior, Vector2, Vector3} from "sprunk-engine";
 import BasicVertexMVPWithUV from "../../shaders/BasicVertexMVPWithUVAndNormals.vert.wgsl?raw";
 import BasicTextureSample from "../../shaders/BasicTextureSample-OpenGL-Like.frag.wgsl?raw";
 import {RotatingOutputBehavior} from "../../behaviors/RotatingOutputBehavior.ts";
+import {ObjectRotatorController} from "../../behaviors/camera/ObjectRotatorController.ts";
+import {ObjectRotatorMouseInput} from "../../behaviors/camera/ObjectRotatorMouseInput.ts";
 
 export class ExampleScene extends GameObject{
     protected onEnable() {
         super.onEnable();
 
         /* --- Camera --- */
+        const orbitGo = new GameObject("Orbit");
+        this.addChild(orbitGo);
+        orbitGo.addBehavior(new ObjectRotatorController(new Vector2(0.0015, 0)));
+        orbitGo.addBehavior(new ObjectRotatorMouseInput());
+
         const cameraGo = new GameObject("Camera");
-        this.addChild(cameraGo);
+        orbitGo.addChild(cameraGo);
         cameraGo.addBehavior(new Camera());
         cameraGo.transform.position.set(0, 0, 10);
 
@@ -25,8 +29,6 @@ export class ExampleScene extends GameObject{
         textGo.addBehavior(textRenderBehavior);
         textRenderBehavior.text = "Rendered in real-time with Sprunk Engine!";
         textGo.transform.position.y = 2.5;
-        textGo.transform.scale.y = 4;
-        textGo.transform.rotation.rotateAroundAxis(Vector3.right(), -Math.PI / 4);
 
         /* --- 3D Model example --- */
         const earth = new GameObject("Earth");
