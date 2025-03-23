@@ -14,24 +14,19 @@ export class ExampleScene extends GameObject{
         const cameraGo = new GameObject("Camera");
         this.addChild(cameraGo);
         cameraGo.addBehavior(new Camera());
-        cameraGo.transform.position.set(0, 1, 10);
-
-        //You can add any behaviors that you want to any game object
-        //For example, a free look camera controller
-        cameraGo.addBehavior(new FreeLookCameraController());
-        //Because the camera controller is a logic behavior, it needs to receive input
-        //For example, a keyboard and mouse input (this enforces separation of concerns)
-        cameraGo.addBehavior(new FreeLookCameraKeyboardMouseInput());
+        cameraGo.transform.position.set(0, 0, 10);
 
         /* --- Text example --- */
         const textGo = new GameObject();
         this.addChild(textGo);
 
         //You can directly customize a game object's behavior
-        const textRenderBehavior = new TextRenderBehavior("assets/fonts/Sprunthrax/Sprunthrax-SemiBold-msdf.json", { centered: true, pixelScale: 1/256, color: [1, 1, 1, 1] });
+        const textRenderBehavior = new TextRenderBehavior("assets/fonts/Sprunthrax/Sprunthrax-SemiBold-msdf.json", { centered: true, pixelScale: 1/250, color: [0.5, 0.3, 1, 0.5] });
         textGo.addBehavior(textRenderBehavior);
-        textRenderBehavior.text = "Move the camera with WASD and mouse";
-        textGo.transform.position.y = 3;
+        textRenderBehavior.text = "Rendered in real-time with Sprunk Engine!";
+        textGo.transform.position.y = 2.5;
+        textGo.transform.scale.y = 4;
+        textGo.transform.rotation.rotateAroundAxis(Vector3.right(), -Math.PI / 4);
 
         /* --- 3D Model example --- */
         const earth = new GameObject("Earth");
@@ -42,7 +37,7 @@ export class ExampleScene extends GameObject{
 
         const moon = new GameObject("Moon");
         earth.addChild(moon);
-        moon.transform.position.z = -3;
+        moon.transform.position.z = -2;
         moon.transform.scale.set(0.5, 0.5, 0.5);
         moon.addBehavior(new RotatingOutputBehavior(Vector3.up(), 0.5));
 
@@ -68,12 +63,5 @@ export class ExampleScene extends GameObject{
                 ),
             )
         })
-
-
-        /* --- Custom behavior example --- */
-        const gridGameObject = new GameObject("Grid");
-        this.addChild(gridGameObject);
-        gridGameObject.addBehavior(new GridRenderBehavior(20, 2, new Color(0.14, 0.15, 0.6, 1)));
-        gridGameObject.transform.rotation.setFromEulerAngles(Math.PI / 2, 0, 0);
     }
 }
