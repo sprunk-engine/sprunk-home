@@ -257,9 +257,11 @@
             top: 50%;
             transform: translateY(-50%);
             width: 45%;
-            max-width: 600px;
+            max-width: 800px;
             z-index: -1;
-            opacity: 0.8;
+            height: 100%;
+            max-height: 600px;
+            border-radius: 20px;
         }
 
         .stats {
@@ -697,7 +699,9 @@
                     </div>
                 </div>
             </div>
-            <img src="/sprunk.png" alt="Game Engine Visualization" class="hero-img">
+            <!--<img src="/sprunk.png" alt="Game Engine Visualization" class="hero-img">-->
+            <canvas id="app" class="hero-img"></canvas>
+            <script type="module" src="/src/main.ts"></script>
         </div>
     </section>
 
