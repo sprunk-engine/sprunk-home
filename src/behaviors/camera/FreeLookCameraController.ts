@@ -8,7 +8,7 @@ export class FreeLookCameraController extends LogicBehavior<void> {
   private _lookSensitivity: number;
   private _target: Vector2 = Vector2.zero();
 
-  constructor(movementSpeed: number = 0.1, lookSensitivity: number = 0.002) {
+  constructor(movementSpeed: number = 0.1, lookSensitivity: number = 0.001) {
     super();
     this._movementSpeed = movementSpeed;
     this._lookSensitivity = lookSensitivity;
