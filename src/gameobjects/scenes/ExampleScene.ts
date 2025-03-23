@@ -17,19 +17,21 @@ export class ExampleScene extends GameObject{
 
         const cameraGo = new GameObject("Camera");
         orbitGo.addChild(cameraGo);
-        cameraGo.addBehavior(new Camera());
-        cameraGo.transform.position.set(0, 0, 10);
+        cameraGo.addBehavior(new Camera(Math.PI / 3.5));
+        cameraGo.transform.position.set(-4, 0, 10);
+
+        const canvas = document.querySelector("canvas")!;
+        //Watch for canvas resize
+        const resize = () => {
+            cameraGo.transform.position.x = canvas.clientWidth < 992 ? -1 : -4;
+        }
+        resize();
+        window.addEventListener("resize", resize);
+
 
         /* --- Text example --- */
         const textGo = new GameObject();
         orbitGo.addChild(textGo);
-
-        //You can directly customize a game object's behavior
-        const textRenderBehavior = new TextRenderBehavior("assets/fonts/Sprunthrax/Sprunthrax-SemiBold-msdf.json", { centered: true, pixelScale: 1/250, color: [0.5, 0.3, 1, 0.7] });
-        textGo.addBehavior(textRenderBehavior);
-        textRenderBehavior.text = "Rendered in real-time with Sprunk Engine!";
-        textGo.transform.position.y = 2.5;
-        textGo.transform.position.x = 0;
 
         /* --- 3D Model example --- */
         const earth = new GameObject("Earth");
