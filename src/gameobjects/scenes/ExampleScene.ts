@@ -1,37 +1,35 @@
-import {Camera, Color, GameObject, MeshRenderBehavior, ObjLoader, TextRenderBehavior, Vector3} from "sprunk-engine";
-import {GridRenderBehavior} from "../../behaviors/debug/GridRenderBehavior.ts";
-import {FreeLookCameraController} from "../../behaviors/camera/FreeLookCameraController.ts";
-import {FreeLookCameraKeyboardMouseInput} from "../../behaviors/camera/FreeLookCameraKeyboardMouseInput.ts";
+import {Camera, GameObject, MeshRenderBehavior, ObjLoader, TextRenderBehavior, Vector2, Vector3} from "sprunk-engine";
 import BasicVertexMVPWithUV from "../../shaders/BasicVertexMVPWithUVAndNormals.vert.wgsl?raw";
 import BasicTextureSample from "../../shaders/BasicTextureSample-OpenGL-Like.frag.wgsl?raw";
 import {RotatingOutputBehavior} from "../../behaviors/RotatingOutputBehavior.ts";
+import {ObjectRotatorController} from "../../behaviors/camera/ObjectRotatorController.ts";
+import {ObjectRotatorMouseInput} from "../../behaviors/camera/ObjectRotatorMouseInput.ts";
 
 export class ExampleScene extends GameObject{
     protected onEnable() {
         super.onEnable();
 
         /* --- Camera --- */
-        const cameraGo = new GameObject("Camera");
-        this.addChild(cameraGo);
-        cameraGo.addBehavior(new Camera());
-        cameraGo.transform.position.set(0, 1, 10);
+        const orbitGo = new GameObject("Orbit");
+        this.addChild(orbitGo);
+        orbitGo.addBehavior(new ObjectRotatorController(new Vector2(0.0015, 0)));
+        orbitGo.addBehavior(new ObjectRotatorMouseInput());
 
-        //You can add any behaviors that you want to any game object
-        //For example, a free look camera controller
-        cameraGo.addBehavior(new FreeLookCameraController());
-        //Because the camera controller is a logic behavior, it needs to receive input
-        //For example, a keyboard and mouse input (this enforces separation of concerns)
-        cameraGo.addBehavior(new FreeLookCameraKeyboardMouseInput());
+        const cameraGo = new GameObject("Camera");
+        orbitGo.addChild(cameraGo);
+        cameraGo.addBehavior(new Camera());
+        cameraGo.transform.position.set(0, 0, 10);
 
         /* --- Text example --- */
         const textGo = new GameObject();
-        this.addChild(textGo);
+        orbitGo.addChild(textGo);
 
         //You can directly customize a game object's behavior
-        const textRenderBehavior = new TextRenderBehavior("assets/fonts/Sprunthrax/Sprunthrax-SemiBold-msdf.json", { centered: true, pixelScale: 1/256, color: [1, 1, 1, 1] });
+        const textRenderBehavior = new TextRenderBehavior("assets/fonts/Sprunthrax/Sprunthrax-SemiBold-msdf.json", { centered: true, pixelScale: 1/250, color: [0.5, 0.3, 1, 0.7] });
         textGo.addBehavior(textRenderBehavior);
-        textRenderBehavior.text = "Move the camera with WASD and mouse";
-        textGo.transform.position.y = 3;
+        textRenderBehavior.text = "Rendered in real-time with Sprunk Engine!";
+        textGo.transform.position.y = 2.5;
+        textGo.transform.position.x = 0;
 
         /* --- 3D Model example --- */
         const earth = new GameObject("Earth");
@@ -42,7 +40,7 @@ export class ExampleScene extends GameObject{
 
         const moon = new GameObject("Moon");
         earth.addChild(moon);
-        moon.transform.position.z = -3;
+        moon.transform.position.z = -2;
         moon.transform.scale.set(0.5, 0.5, 0.5);
         moon.addBehavior(new RotatingOutputBehavior(Vector3.up(), 0.5));
 
@@ -69,11 +67,24 @@ export class ExampleScene extends GameObject{
             )
         })
 
-
-        /* --- Custom behavior example --- */
-        const gridGameObject = new GameObject("Grid");
-        this.addChild(gridGameObject);
-        gridGameObject.addBehavior(new GridRenderBehavior(20, 2, new Color(0.14, 0.15, 0.6, 1)));
-        gridGameObject.transform.rotation.setFromEulerAngles(Math.PI / 2, 0, 0);
+        const stars = new GameObject("Stars");
+        this.addChild(stars);
+        stars.addBehavior(new RotatingOutputBehavior(Vector3.up(), 0.05));
+        ObjLoader.load("/assets/models/stars.obj").then((obj) => {
+            stars.addBehavior(
+                new MeshRenderBehavior(
+                    obj,
+                    "/assets/models/stars.png",
+                    BasicVertexMVPWithUV,
+                    BasicTextureSample,
+                    {
+                        addressModeU: "repeat",
+                        addressModeV: "repeat",
+                        magFilter: "linear",
+                        minFilter: "linear",
+                    }
+                ),
+            )
+        })
     }
 }
