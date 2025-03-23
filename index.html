@@ -1,46 +1,866 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" href="/sprunk.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sprunk Project</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprunk - Modern Web Game Engine</title>
+    <link rel="icon" href="/sprunk.png">
     <style>
-      body {
-        margin: 0;
-        overflow: hidden;
-      }
-      canvas {
-        width: 100vw;
-        height: 100vh;
-      }
+        :root {
+            --primary: #00e676;
+            --primary-dark: #00c853;
+            --secondary: #651fff;
+            --dark: #121212;
+            --dark-surface: #1e1e1e;
+            --light: #f5f5f7;
+            --text-light: #ffffff;
+            --text-dark: #121212;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Modern font stack for 2025 */
+            --font-main: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
 
-      #container {
-        padding: 10px;
-        background-color: #424242;
-        border-radius: 5px;
-        min-width: 100px;
-        min-height: 30px;
-        max-width: 99vw;
-        max-height: 99vh;
-      }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-      #debug {
-        width: calc(100% - 0px);
-        height: 100%;
-        max-height: calc(100vh - 20px);
-      }
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
 
-      #debug > div{
-        width: 100%;
-        height: 100%;
-        max-height: calc(100vh - 20px);
+        body {
+            font-family: var(--font-main);
+            background-color: var(--dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
 
-      }
+        /* Typography */
+        h1, h2, h3, h4, h5 {
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            line-height: 1.2;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            margin-bottom: 1.5rem;
+        }
+
+        h3 {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            margin-bottom: 1rem;
+        }
+
+        p {
+            font-size: clamp(1rem, 1.5vw, 1.125rem);
+            margin-bottom: 1.5rem;
+            max-width: 65ch;
+        }
+
+        .text-gradient {
+            background-image: linear-gradient(90deg, var(--primary), var(--secondary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        /* Layout */
+        .container {
+            width: 90%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            padding: 100px 0;
+            position: relative;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            backdrop-filter: blur(10px);
+            background: rgba(18, 18, 18, 0.8);
+            z-index: 1000;
+            padding: 15px 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo img {
+            height: 40px;
+        }
+
+        .logo span {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text-light);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 600;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 230, 118, 0.3);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: var(--transition);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 230, 118, 0.4);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: var(--dark);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 100%;
+            background: radial-gradient(circle at 70% 50%, rgba(101, 31, 255, 0.15), transparent 70%);
+            z-index: -1;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50%;
+            height: 80%;
+            background: radial-gradient(circle at 30% 80%, rgba(0, 230, 118, 0.1), transparent 70%);
+            z-index: -1;
+        }
+
+        .hero-content {
+            max-width: 700px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .hero-img {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 45%;
+            max-width: 600px;
+            z-index: -1;
+            opacity: 0.8;
+        }
+
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .stat {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .stat h3 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        /* Features Section */
+        .features {
+            background-color: var(--dark-surface);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--dark);
+            border-radius: 20px;
+            padding: 40px 30px;
+            transition: var(--transition);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: var(--transition);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--card-shadow);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--glass-bg);
+            border-radius: 12px;
+            margin-bottom: 25px;
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        /* Showcase Section */
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .showcase-item {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+            background: var(--dark-surface);
+        }
+
+        .showcase-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .showcase-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            transform: translateY(100%);
+            transition: var(--transition);
+        }
+
+        .showcase-item:hover .showcase-overlay {
+            transform: translateY(0);
+        }
+
+        .showcase-item:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Getting Started */
+        .getting-started {
+            background-color: var(--dark-surface);
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .step {
+            background: var(--dark);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            border: 1px solid var(--glass-border);
+        }
+
+        .step-number {
+            position: absolute;
+            top: -25px;
+            left: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .code-block {
+            background: var(--dark);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: monospace;
+            border: 1px solid var(--glass-border);
+        }
+
+        .code-block code {
+            color: #e0e0e0;
+        }
+
+        .highlight {
+            color: var(--primary);
+        }
+
+        /* Documentation */
+        .docs-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .doc-card {
+            background: var(--dark);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
+            text-decoration: none;
+            color: var(--text-light);
+        }
+
+        .doc-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-shadow);
+            border-color: var(--primary);
+        }
+
+        .doc-card h4 {
+            margin-bottom: 15px;
+        }
+
+        /* CTA */
+        .cta {
+            text-align: center;
+            background: radial-gradient(circle at center, rgba(0, 230, 118, 0.1), transparent 70%);
+            padding: 100px 0;
+        }
+
+        .cta h2 {
+            margin-bottom: 30px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark-surface);
+            padding: 80px 0 30px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .footer-column h4 {
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid var(--glass-border);
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .hero-img {
+                opacity: 0.3;
+                width: 70%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .hero {
+                text-align: center;
+            }
+
+            .hero-content {
+                margin: 0 auto;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .stats {
+                justify-content: center;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .animate {
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        /* For scroll animation (simple implementation) */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-in.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .center{
+            margin: auto;
+        }
+
+        .margin-top-5{
+            margin-top: 5px;
+        }
+
+        .margin-top-10{
+            margin-top: 10px;
+        }
+
+        .margin-top-20{
+            margin-top: 20px;
+        }
     </style>
-  </head>
-  <body>
-    <canvas id="app"></canvas>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#" class="logo">
+                    <img src="/public/sprunk.png" alt="Sprunk Logo">
+                    <span>Sprunk</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#showcase">Showcase</a></li>
+                    <li><a href="#getting-started">Getting Started</a></li>
+                    <li><a href="#documentation">Documentation</a></li>
+                    <li><a href="https://github.com/sprunk-engine/empty" target="_blank">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content animate">
+                <h1>Build Amazing Web Games with <span class="text-gradient">Sprunk Engine</span></h1>
+                <p>A lightweight, modular TypeScript game engine designed for modern browsers. Only 50kb when minified, but packed with powerful features for creating impressive 2D and 3D games.</p>
+                <div class="hero-buttons">
+                    <a href="#getting-started" class="btn">Get Started</a>
+                    <a href="https://github.com/sprunk-engine/empty" class="btn btn-secondary" target="_blank">Fork Template</a>
+                </div>
+                <div class="stats">
+                    <div class="stat">
+                        <h3>50kb</h3>
+                        <p>Minified Size</p>
+                    </div>
+                    <div class="stat">
+                        <h3>WebGPU</h3>
+                        <p>Rendering Engine</p>
+                    </div>
+                    <div class="stat">
+                        <h3>100%</h3>
+                        <p>TypeScript</p>
+                    </div>
+                </div>
+            </div>
+            <img src="/public/sprunk.png" alt="Game Engine Visualization" class="hero-img">
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2>Powerful <span class="text-gradient">Features</span></h2>
+                <p class="center">Sprunk is built with a focus on event-driven architecture and strict separation of concerns, making your games more maintainable and extendable.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🎮</div>
+                    <h3>WebGPU Rendering</h3>
+                    <p>Modern 3D rendering engine with support for sprites, meshes, line drawing, and text rendering.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">⚡</div>
+                    <h3>2D Physics</h3>
+                    <p>Integrated 2D polygon physics engine for realistic object interactions and collisions.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🔊</div>
+                    <h3>Audio Engine</h3>
+                    <p>Complete audio system for sound effects and music in your games.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Input System</h3>
+                    <p>Support for multiple gamepads, keyboard, and mouse with customizable mappings.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">💉</div>
+                    <h3>Dependency Injection</h3>
+                    <p>Built-in dependency injection system for better code organization and testing.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🐞</div>
+                    <h3>Debugging Tools</h3>
+                    <p>Integrated debugging tools to help you find and fix issues quickly.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="showcase" class="showcase">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2>Game <span class="text-gradient">Showcase</span></h2>
+                <p class="center">Check out what developers have built using Sprunk Engine.</p>
+            </div>
+            <div class="showcase-grid">
+                <div class="showcase-item fade-in">
+                    <img src="https://via.placeholder.com/600x338/121212/00e676?text=Sprunk+Hero" alt="Sprunk Hero">
+                    <div class="showcase-overlay">
+                        <h3>Sprunk Hero</h3>
+                        <p>A full 3D game example</p>
+                    </div>
+                </div>
+                <div class="showcase-item fade-in">
+                    <img src="https://via.placeholder.com/600x338/121212/651fff?text=Flappy+Sprunk" alt="Flappy Sprunk">
+                    <div class="showcase-overlay">
+                        <h3>Flappy Sprunk</h3>
+                        <p>A 2D game example</p>
+                    </div>
+                </div>
+                <div class="showcase-item fade-in">
+                    <img src="https://via.placeholder.com/600x338/121212/00e676?text=Physics+Sandbox" alt="Physics Sandbox">
+                    <div class="showcase-overlay">
+                        <h3>Physics Sandbox</h3>
+                        <p>Physics engine demonstration</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="getting-started" class="getting-started">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2>Getting <span class="text-gradient">Started</span></h2>
+                <p class="center">Begin building your game in minutes with these simple steps.</p>
+            </div>
+            <div class="steps">
+                <div class="step fade-in">
+                    <div class="step-number">1</div>
+                    <h3>Install the package</h3>
+                    <p>Use npm to install Sprunk Engine in your project.</p>
+                    <div class="code-block">
+                        <code>npm i <span class="highlight">sprunk-engine</span></code>
+                    </div>
+                </div>
+                <div class="step fade-in">
+                    <div class="step-number">2</div>
+                    <h3>Initialize the engine</h3>
+                    <p>Create a new instance of the game engine in your main file.</p>
+                    <div class="code-block">
+                        <code>
+                            import { Sprunk } from <span class="highlight">'sprunk-engine'</span>;<br><br>
+                            const canvas = document.getElementById('app');<br>
+                            const game = Sprunk.newGame(canvas);
+                        </code>
+                    </div>
+                </div>
+                <div class="step fade-in">
+                    <div class="step-number">3</div>
+                    <h3>Create your first game object</h3>
+                    <p>Add game objects and behaviors to start building your game.</p>
+                    <div class="code-block">
+                        <code>
+                            const cameraGo = new <span class="highlight">GameObject</span>("Camera");<br>
+                            game.root.addChild(cameraGo);<br>
+                            cameraGo.addBehavior(new <span class="highlight">Camera</span>());<br>
+                            cameraGo.transform.position.set(0, 1, 10);<br>
+                        </code>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 50px;" class="fade-in">
+                <a href="https://github.com/sprunk-engine/empty" class="btn" target="_blank">Fork Starter Template</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="documentation" class="documentation">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2>Explore the <span class="text-gradient">Documentation</span></h2>
+                <p class="center">Comprehensive guides and API references to help you master Sprunk Engine.</p>
+            </div>
+            <div class="docs-cards">
+                <a href="https://github.com/CPNV-ES/game-engine/blob/develop/doc/architecture.md" class="doc-card fade-in" target="_blank">
+                    <h4>Architecture</h4>
+                    <p>Learn about the core architecture and design principles behind Sprunk Engine.</p>
+                </a>
+                <a href="https://github.com/CPNV-ES/game-engine/blob/develop/doc/behaviors.md" class="doc-card fade-in" target="_blank">
+                    <h4>Behaviors</h4>
+                    <p>Understand how to use behaviors to add functionality to your game objects.</p>
+                </a>
+                <a href="https://github.com/CPNV-ES/game-engine/blob/develop/doc/extensions/render-engine/render-engine.md" class="doc-card fade-in" target="_blank">
+                    <h4>Rendering Engine</h4>
+                    <p>Explore the WebGPU-based rendering capabilities for 2D and 3D graphics.</p>
+                </a>
+                <a href="https://github.com/CPNV-ES/game-engine/blob/develop/doc/extensions/physics-engine/physics-engine.md" class="doc-card fade-in" target="_blank">
+                    <h4>Physics Engine</h4>
+                    <p>Learn how to implement realistic physics in your games.</p>
+                </a>
+                <a href="https://github.com/CPNV-ES/game-engine/blob/develop/doc/extensions/input-system/input-system.md" class="doc-card fade-in" target="_blank">
+                    <h4>Input System</h4>
+                    <p>Implement controls for keyboard, mouse, and gamepad interactions.</p>
+                </a>
+                <a href="https://github.com/CPNV-ES/game-engine/blob/develop/doc/events.md" class="doc-card fade-in" target="_blank">
+                    <h4>Event System</h4>
+                    <p>Master the event-driven architecture for responsive game design.</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="container fade-in">
+            <h2>Ready to Create Your Next <span class="text-gradient">Game Masterpiece?</span></h2>
+            <p class="center">Join developers around the world who are building amazing games with Sprunk Engine.</p>
+            <a href="https://github.com/sprunk-engine/empty" class="btn margin-top-20" target="_blank">Start Building Today</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h4>Sprunk Engine</h4>
+                    <p>A lightweight, modular TypeScript game engine designed for modern browsers.</p>
+                </div>
+                <div class="footer-column">
+                    <h4>Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://docs.sprunk-engine.com/" target="_blank">Documentation</a></li>
+                        <li><a href="https://github.com/sprunk-engine/empty" target="_blank">Starter Template</a></li>
+                        <li><a href="https://github.com/sprunk-engine/sprunk-hero" target="_blank">Example Projects</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Community</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://github.com/CPNV-ES/game-engine/issues" target="_blank">GitHub Issues</a></li>
+                        <li><a href="https://github.com/CPNV-ES/game-engine" target="_blank">Contribute</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://github.com/CPNV-ES/game-engine/blob/develop/LICENSE.txt" target="_blank">MIT License</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p class="center">&copy; 2025 Sprunk Engine. All rights reserved. Made with modern web technologies.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple scroll animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const fadeElements = document.querySelectorAll('.fade-in');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            fadeElements.forEach(element => {
+                observer.observe(element);
+            });
+        });
+    </script>
+</body>
 </html>
