@@ -1,7 +1,8 @@
-# Sprunk Empty Project - With Quick Start Setup
+# Sprunk Home Project
 
 ## Description
 This is an empty [sprunk](https://sprunk-engine.com) project that use [Vite](https://vitejs.dev/).
+This project is the home page of [sprunk-engine](https://sprunk-engine.com).
 
 ## Getting Started
 
