@@ -15,7 +15,7 @@
             --light: #f5f5f7;
             --text-light: #ffffff;
             --text-dark: #121212;
-            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-bg: rgba(55, 55, 55, 0.8);
             --glass-border: rgba(255, 255, 255, 0.1);
             --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -425,10 +425,52 @@
             overflow-x: auto;
             font-family: monospace;
             border: 1px solid var(--glass-border);
+            position: relative;
         }
 
         .code-block code {
             color: #e0e0e0;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            color: var(--text-light);
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .code-block:hover .copy-button {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .copy-button svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+        }
+
+        .copy-button:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .copy-button.copied {
+            background: var(--primary);
+            border-color: var(--primary);
         }
 
         .highlight {
@@ -793,6 +835,11 @@
                     <h3>Install the package</h3>
                     <p>Use npm to install Sprunk Engine in your project.</p>
                     <div class="code-block">
+                        <button class="copy-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />
+                            </svg>
+                        </button>
                         <code>npm i <span class="highlight">sprunk-engine</span></code>
                     </div>
                 </div>
@@ -801,6 +848,11 @@
                     <h3>Initialize the engine</h3>
                     <p>Create a new instance of the game engine in your main file.</p>
                     <div class="code-block">
+                        <button class="copy-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />
+                            </svg>
+                        </button>
                         <code>
                             import { Sprunk } from <span class="highlight">'sprunk-engine'</span>;<br><br>
                             const canvas = document.getElementById('app');<br>
@@ -813,6 +865,11 @@
                     <h3>Create your first game object</h3>
                     <p>Add game objects and behaviors to start building your game.</p>
                     <div class="code-block">
+                        <button class="copy-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />
+                            </svg>
+                        </button>
                         <code>
                             const cameraGo = new <span class="highlight">GameObject</span>("Camera");<br>
                             game.root.addChild(cameraGo);<br>
@@ -939,6 +996,36 @@
             
             fadeElements.forEach(element => {
                 observer.observe(element);
+            });
+
+            // Copy code functionality
+            document.querySelectorAll('.copy-button').forEach(button => {
+                button.addEventListener('click', async () => {
+                    const codeBlock = button.nextElementSibling;
+                    const text = codeBlock.innerText;
+                    
+                    try {
+                        await navigator.clipboard.writeText(text);
+                        button.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                            </svg>
+                            Copied!
+                        `;
+                        button.classList.add('copied');
+                        
+                        setTimeout(() => {
+                            button.innerHTML = `
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />
+                                </svg>
+                            `;
+                            button.classList.remove('copied');
+                        }, 2000);
+                    } catch (err) {
+                        console.error('Failed to copy text: ', err);
+                    }
+                });
             });
         });
     </script>
