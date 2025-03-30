@@ -1,4 +1,4 @@
-import {Camera, GameObject, MeshRenderBehavior, ObjLoader, TextRenderBehavior, Vector2, Vector3} from "sprunk-engine";
+import {Camera, GameObject, MeshRenderBehavior, ObjLoader, Vector2, Vector3} from "sprunk-engine";
 import BasicVertexMVPWithUV from "../../shaders/BasicVertexMVPWithUVAndNormals.vert.wgsl?raw";
 import BasicTextureSample from "../../shaders/BasicTextureSample-OpenGL-Like.frag.wgsl?raw";
 import {RotatingOutputBehavior} from "../../behaviors/RotatingOutputBehavior.ts";
